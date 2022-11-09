@@ -35,10 +35,12 @@ jobs:
 
       - name: Short Commit ID
         id: commit
-        run: git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD
+        run: |
+          echo ::set-env name=CNI_VERSION::$(git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD)
 
       - name: Show Commit ID
-        run: echo ${{ steps.commit.outputs }}
+        run: |
+          echo "cni_version: ${{ env.CNI_VERSION }}"
 
       - name: Setup Golang
         uses: actions/setup-go@v3
@@ -74,8 +76,7 @@ jobs:
           context: ./src/samples/simple
           # Note: tags has to be all lower-case
           tags: |
-            oskardudycz/eventsourcing.nodejs.simple:latest 
-            ghcr.io/oskardudycz/eventsourcing.nodejs/simple:latest
+            zengxu/cni-copier:${{ env.CNI_VERSION }} 
           # build on feature branches, push only on main branch
           push: ${{ github.ref == 'refs/heads/main' }}
 
