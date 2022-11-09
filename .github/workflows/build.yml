@@ -1,7 +1,6 @@
 name: Image Builder
 
 on:
-  on:
   label:
     types:
       - created
