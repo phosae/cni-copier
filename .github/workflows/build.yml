@@ -20,12 +20,25 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
+      - name: Checkout copier
+        uses: actions/checkout@master
+        with:
+          repository: phosae/cni-copier
+          path: ./cni-copier
+
       - name: Checkout CNI plugins repo
         uses: actions/checkout@master
         with: 
           repository: containernetworking/plugins
           path: ./plugins
           submodules: recursive
+
+      - name: Short Commit ID
+        id: commit
+        run: git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD
+
+      - name: Show Commit ID
+        run: echo ${{ steps.commit.outputs }}
 
       - name: Setup Golang
         uses: actions/setup-go@v3
@@ -37,3 +50,34 @@ jobs:
 
       - name: Build Plugins
         run: ./plugins/build_linux.sh
+      
+      - name: Build copier
+        run: go build -o ./cni-copier/bin/copier ./cni-copier/
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: zengxu
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build image and push to Docker Hub 
+        uses: docker/build-push-action@v3
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: ./src/samples/simple
+          # Note: tags has to be all lower-case
+          tags: |
+            oskardudycz/eventsourcing.nodejs.simple:latest 
+            ghcr.io/oskardudycz/eventsourcing.nodejs/simple:latest
+          # build on feature branches, push only on main branch
+          push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
