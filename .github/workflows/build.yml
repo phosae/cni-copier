@@ -54,7 +54,7 @@ jobs:
         run: ./plugins/build_linux.sh
       
       - name: Build copier
-        run: go build -o ./cni-copier/bin/copier ./cni-copier/
+        run: GO111MODULE=off go build -o ./cni-copier/bin/copier ./cni-copier/
 
       - name: Copy Plugins
         run: mv ./plugins/bin ./cni-copier/cni-bin
