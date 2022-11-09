@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cni-copier-ds
+  labels:
+    tier: node
+    app: cni-copier
+    name: cni-copier
+spec:
+  selector:
+    matchLabels:
+      name: cni-copier
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: cni-copier
+        name: cni-copier
+    spec:
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
+      - operator: Exists
+        effect: NoExecute
+      containers:
+      - name: copier
+        image: zengxu/cni-copier:ac86731
+        env:
+        - name: CNI_BIN_SRC
+          value: /opt/cni/bin
+        - name: CNI_BIN_DST
+          value: /host/opt/cni/bin
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "15Mi"
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: cnibin
+          mountPath: /host/opt/cni/bin
+          mountPropagation: Bidirectional
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cnibin
+        hostPath:
+          path: /opt/cni/bin
+
+    

@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
 var (
 	cniBinSrcDir = os.Getenv("CNI_BIN_SRC")
 	cniBinDstDir = os.Getenv("CNI_BIN_DST")
+	override     = os.Getenv("OVERRIDE")
 )
 
 func main() {
@@ -51,10 +53,14 @@ func main() {
 	}
 
 	for _, plugin := range inputs {
-		if plugin.IsDir() || !plugin.Type().IsRegular() || m[plugin.Name()] {
+		if plugin.IsDir() || !plugin.Type().IsRegular() {
 			continue
 		}
-		if err = os.Rename(filepath.Join(cniBinSrcDir, plugin.Name()), filepath.Join(cniBinDstDir, plugin.Name())); err != nil {
+		if m[plugin.Name()] && override != "" {
+			continue
+		}
+		cpCmd := exec.Command("cp", filepath.Join(cniBinSrcDir, plugin.Name()), filepath.Join(cniBinDstDir, plugin.Name()))
+		if err = cpCmd.Run(); err != nil {
 			fmt.Println("unable to copy", plugin.Name(), err)
 		} else {
 			fmt.Println("copied", plugin.Name())
