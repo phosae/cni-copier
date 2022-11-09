@@ -56,7 +56,7 @@ func main() {
 		if plugin.IsDir() || !plugin.Type().IsRegular() {
 			continue
 		}
-		if m[plugin.Name()] && override != "" {
+		if m[plugin.Name()] && override == "" {
 			continue
 		}
 		cpCmd := exec.Command("cp", filepath.Join(cniBinSrcDir, plugin.Name()), filepath.Join(cniBinDstDir, plugin.Name()))

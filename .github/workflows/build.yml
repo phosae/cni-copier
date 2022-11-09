@@ -51,7 +51,8 @@ jobs:
         run: ls
 
       - name: Build Plugins
-        run: ./plugins/build_linux.sh
+        run: |
+          ./plugins/build_linux.sh -ldflags '-extldflags -static -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${{ env.CNI_VERSION }}'
       
       - name: Build copier
         run: GO111MODULE=off go build -o ./cni-copier/bin/copier ./cni-copier/
