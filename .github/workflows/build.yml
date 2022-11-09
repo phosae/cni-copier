@@ -36,7 +36,7 @@ jobs:
       - name: Short Commit ID
         id: commit
         run: |
-          echo ::set-env name=CNI_VERSION::$(git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD)
+          git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD >> $GITHUB_ENV
 
       - name: Show Commit ID
         run: |
