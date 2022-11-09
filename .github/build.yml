@@ -1,0 +1,40 @@
+name: Image Builder
+
+on:
+  on:
+  label:
+    types:
+      - created
+  push:
+    branches:
+      - main
+  issues:
+    types:
+      - opened
+      - labeled
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Checkout CNI plugins repo
+        uses: actions/checkout@master
+        with: 
+          repository: containernetworking/plugins
+          path: ./plugins
+          submodules: recursive
+
+      - name: Setup Golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Show Working directory
+        run: ls
+
+      - name: Build Plugins
+        run: ./plugins/build_linux.sh
