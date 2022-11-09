@@ -36,7 +36,7 @@ jobs:
       - name: Short Commit ID
         id: commit
         run: |
-          git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD >> $GITHUB_ENV
+          echo "CNI_VERSION=$(git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Show Commit ID
         run: |
@@ -56,6 +56,9 @@ jobs:
       - name: Build copier
         run: go build -o ./cni-copier/bin/copier ./cni-copier/
 
+      - name: Copy Plugins
+        run: mv ./plugins/bin ./cni-copier/cni-bin
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -73,7 +76,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           # relative path to the place where source code with Dockerfile is located
-          context: ./src/samples/simple
+          context: ./cni-copier
           # Note: tags has to be all lower-case
           tags: |
             zengxu/cni-copier:${{ env.CNI_VERSION }} 
