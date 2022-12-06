@@ -1,6 +1,9 @@
 FROM ubuntu:22.04
+ARG TARGETARCH
 
-ADD /cni-bin /opt/cni/bin
-ADD /bin/copier copier
+ENV CNI_BIN_SRC /opt/cni/bin
+
+ADD /cni-bin-$TARGETARCH /opt/cni/bin
+ADD /bin/copier-$TARGETARCH copier
 
 ENTRYPOINT ["/copier"]

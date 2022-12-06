@@ -47,18 +47,25 @@ jobs:
         with:
           go-version: 1.18
 
-      - name: Show Working directory
-        run: ls
-
-      - name: Build Plugins
+      - name: Build AMD64 Plugins
         run: |
-          ./plugins/build_linux.sh -ldflags '-extldflags -static -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${{ env.CNI_VERSION }}'
-      
-      - name: Build copier
-        run: GO111MODULE=off go build -o ./cni-copier/bin/copier ./cni-copier/
+          GOOS=linux GOARCH=amd64 ./plugins/build_linux.sh -ldflags '-extldflags -static -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${{ env.CNI_VERSION }}'
 
-      - name: Copy Plugins
-        run: mv ./plugins/bin ./cni-copier/cni-bin
+      - name: Copy AMD64 Plugins
+        run: mv ./plugins/bin ./cni-copier/cni-bin-amd64
+      
+      - name: Build ARM64 Plugins
+        run: |
+          GOOS=linux GOARCH=arm64 ./plugins/build_linux.sh -ldflags '-extldflags -static -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${{ env.CNI_VERSION }}'
+
+      - name: Copy ARM64 Plugins
+        run: mv ./plugins/bin ./cni-copier/cni-bin-arm64
+
+      - name: Build AMD64 copier
+        run: GO111MODULE=off  GOOS=linux GOARCH=amd64 go build -o ./cni-copier/bin/copier-amd64 ./cni-copier/
+
+      - name: Build ARM64 copier
+        run: GO111MODULE=off  GOOS=linux GOARCH=arm64 go build -o ./cni-copier/bin/copier-arm64 ./cni-copier/
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -81,7 +88,8 @@ jobs:
           # Note: tags has to be all lower-case
           tags: |
             zengxu/cni-copier:${{ env.CNI_VERSION }} 
-          # build on feature branches, push only on main branch
+          platforms: |
+            linux/amd64,linux/arm64
           push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Image digest
