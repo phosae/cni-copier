@@ -32,7 +32,16 @@ jobs:
           repository: containernetworking/plugins
           path: ./plugins
           submodules: recursive
-
+      
+      - name: Checkout CNI lib repo
+        uses: actions/checkout@master
+        with: 
+          repository: containernetworking/cni
+          path: ./cnilib
+      
+      - name: Copy debug plugin
+        run: mv ./cnilib/plugins/debug ./plugins/plugins/meta/ && rm plugins/plugins/meta/debug/{go.mod,go.sum}
+      
       - name: Short Commit ID
         id: commit
         run: |
