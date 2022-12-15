@@ -9,7 +9,7 @@ kubectl apply -f copier-daemonset.yml
 ## install on local machine
 
 ```
-docker run --rm -v /<your>/<host>/<path>:/out -e CNI_BIN_DST=/out zengxu/cni-copier:7e9ada5
+docker run --rm -v /opt/cni/bin:/out -e CNI_BIN_DST=/out zengxu/cni-copier:221215-ec76e3c
 ```
 
 current plugin sources
