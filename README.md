@@ -14,3 +14,4 @@ docker run --rm -v /opt/cni/bin:/out -e CNI_BIN_DST=/out zengxu/cni-copier:22121
 
 current plugin sources
 - https://github.com/containernetworking/plugins
+- https://github.com/phosae/cniplugins
