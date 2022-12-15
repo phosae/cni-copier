@@ -26,7 +26,7 @@ spec:
         effect: NoExecute
       containers:
       - name: copier
-        image: zengxu/cni-copier:7e9ada5
+        image: zengxu/cni-copier:221215-ec76e3c
         env:
         - name: CNI_BIN_SRC
           value: /opt/cni/bin
