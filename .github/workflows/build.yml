@@ -39,15 +39,30 @@ jobs:
           repository: containernetworking/cni
           path: ./cnilib
       
+      - name: Checkout My CNI plugins repo
+        uses: actions/checkout@master
+        with: 
+          repository: phosae/cniplugins
+          path: ./phosaecniplugins
+      
       - name: Copy debug plugin
         run: mv ./cnilib/plugins/debug ./plugins/plugins/meta/ && rm plugins/plugins/meta/debug/{go.mod,go.sum}
+
+
+      - name: Copy cbandwidth and xdebug plugin
+        run: |
+          mv ./phosaecniplugins/plugins/meta/xdebug ./plugins/plugins/meta/ &&  mv ./phosaecniplugins/plugins/meta/cbandwidth ./plugins/plugins/meta/
+
+      - name: Set Repo Version
+        run: |
+          echo "VERSION=$(cat ./cni-copier/VERSION)" >> $GITHUB_ENV
       
       - name: Short Commit ID
         id: commit
         run: |
           echo "CNI_VERSION=$(git --git-dir=./plugins/.git --work-tree=./plugins rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Show Commit ID
+      - name: Show CNI_VERSION
         run: |
           echo "cni_version: ${{ env.CNI_VERSION }}"
 
@@ -96,7 +111,7 @@ jobs:
           context: ./cni-copier
           # Note: tags has to be all lower-case
           tags: |
-            zengxu/cni-copier:${{ env.CNI_VERSION }} 
+            zengxu/cni-copier:${{ env.VERSION }} 
           platforms: |
             linux/amd64,linux/arm64
           push: ${{ github.ref == 'refs/heads/main' }}
