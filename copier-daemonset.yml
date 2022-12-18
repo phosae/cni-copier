@@ -26,12 +26,14 @@ spec:
         effect: NoExecute
       containers:
       - name: copier
-        image: zengxu/cni-copier:221215-ec76e3c
+        image: zengxu/cni-copier:221218-ec76e3c
         env:
         - name: CNI_BIN_SRC
           value: /opt/cni/bin
         - name: CNI_BIN_DST
           value: /host/opt/cni/bin
+        #- name: OVERRIDE # uncomment to override existing plugins
+        #  value: 'true'
         resources:
           requests:
             cpu: "10m"
