@@ -3,7 +3,7 @@
 install cni-copier to Kubernetes cluster as Daemonset, cni-copier will automatically install the CNI plugins not present on specific path
 
 ```
-kubectl apply -f copier-daemonset.yml
+kubectl apply -f https://raw.githubusercontent.com/phosae/cni-copier/main/copier-daemonset.yml
 ```
 
 ## install on local machine
